@@ -25,9 +25,9 @@ import (
 
 var (
 	kubeconfig           = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	storageclasses       = flag.String("storageclasses", "rook-ceph-block,rook-ceph-block-retain", "storageclass names to reconcile")
+	storageclasses       = flag.String("storageclasses", "rook-ceph-block,rook-ceph-block-retain", "storageclass names to reconcile (comma-separated)")
 	rookns               = flag.String("rookcephns", "rook-ceph", "rook namespace")
-	deletepod            = flag.Bool("deletepod", true, "Delete pod")
+	deletepod            = flag.Bool("deletepod", true, "do delete pod?")
 	storageclassesParsed = []string{""}
 	config               *rest.Config
 )
