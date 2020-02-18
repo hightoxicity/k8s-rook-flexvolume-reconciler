@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: rook-ceph-rook-flexvolume-reconciler-volumes-manager
+  namespace: rook-ceph
+rules:
+- apiGroups:
+  - "rook.io"
+  resources:
+  - volumes
+  verbs:
+  - get   
+  - list
+  - delete
