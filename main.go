@@ -124,11 +124,15 @@ func CheckPodPvcs(pod *v1.Pod) {
 							if pod.ObjectMeta.Name == vol.Attachments[0].PodName {
 
 								if vol.Attachments[0].Node != pod.Spec.NodeName {
+									fmt.Printf("We have a fish: %s\n", pvcs.Spec.VolumeName)
 									err := rookCs.Volumes(rookNamespace).Delete(pvcs.Spec.VolumeName, &metav1.DeleteOptions{})
 									if err == nil {
 										fmt.Printf("Volumes.rook.io %s deleted from %s ns!\n", pvcs.Spec.VolumeName, rookNamespace)
 										if *deletepod == true {
-											cv1.Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, &metav1.DeleteOptions{})
+											err := cv1.Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, &metav1.DeleteOptions{})
+											if err == nil {
+												fmt.Printf("We deleted %s pod in %s ns\n\n", pod.ObjectMeta.Name, pod.ObjectMeta.Namespace)
+											}
 										}
 									}
 								}
