@@ -127,7 +127,7 @@ func CheckPodPvcs(pod *v1.Pod) {
 									err := rookCs.Volumes(rookNamespace).Delete(pvcs.Spec.VolumeName, &metav1.DeleteOptions{})
 									if err == nil {
 										fmt.Printf("Volumes.rook.io %s deleted from %s ns!\n", pvcs.Spec.VolumeName, rookNamespace)
-										if *deletepod {
+										if *deletepod == true {
 											cv1.Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, &metav1.DeleteOptions{})
 										}
 									}
