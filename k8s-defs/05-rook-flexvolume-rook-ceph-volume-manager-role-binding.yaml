@@ -9,5 +9,5 @@ subjects:
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
-  name: rook-flexvolume-reconciler-volumes-manager
+  name: rook-ceph-rook-flexvolume-reconciler-volumes-manager
   apiGroup: rbac.authorization.k8s.io

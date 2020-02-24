@@ -28,6 +28,7 @@ var (
 	storageclasses       = flag.String("storageclasses", "rook-ceph-block,rook-ceph-block-retain", "storageclass names to reconcile (comma-separated)")
 	rookns               = flag.String("rookcephns", "rook-ceph", "rook namespace")
 	deletepod            = flag.Bool("deletepod", true, "do delete pod?")
+	verbose              = flag.Bool("verbose", false, "Turn on verbosity")
 	storageclassesParsed = []string{""}
 	config               *rest.Config
 )
@@ -62,6 +63,10 @@ func main() {
 
 	if err != nil {
 		log.Fatalf("%s", err)
+	} else {
+		if *verbose == true {
+			log.Println("Clientset properly retrieved!")
+		}
 	}
 
 	storageclassesParsed = strings.Split(*storageclasses, ",")
@@ -107,6 +112,10 @@ func CheckPodPvcs(pod *v1.Pod) {
 
 	if err != nil {
 		log.Fatalf("Error creating clientset for rook: %s", err)
+	} else {
+		if *verbose == true {
+			log.Println("CheckPodPvcs: Clientset properly retrieved!")
+		}
 	}
 
 	for _, vol := range pod.Spec.Volumes {
@@ -124,23 +133,39 @@ func CheckPodPvcs(pod *v1.Pod) {
 							if pod.ObjectMeta.Name == vol.Attachments[0].PodName {
 
 								if vol.Attachments[0].Node != pod.Spec.NodeName {
-									fmt.Printf("We have a fish: %s\n", pvcs.Spec.VolumeName)
+									log.Printf("We have a fish: %s\n", pvcs.Spec.VolumeName)
 									err := rookCs.Volumes(rookNamespace).Delete(pvcs.Spec.VolumeName, &metav1.DeleteOptions{})
 									if err == nil {
-										fmt.Printf("Volumes.rook.io %s deleted from %s ns!\n", pvcs.Spec.VolumeName, rookNamespace)
+										log.Printf("Volumes.rook.io %s deleted from %s ns!\n", pvcs.Spec.VolumeName, rookNamespace)
 										if *deletepod == true {
 											err := cv1.Pods(pod.ObjectMeta.Namespace).Delete(pod.ObjectMeta.Name, &metav1.DeleteOptions{})
 											if err == nil {
-												fmt.Printf("We deleted %s pod in %s ns\n\n", pod.ObjectMeta.Name, pod.ObjectMeta.Namespace)
+												log.Printf("We deleted %s pod in %s ns\n\n", pod.ObjectMeta.Name, pod.ObjectMeta.Namespace)
+											} else {
+												if *verbose == true {
+													log.Printf("%s\n", err)
+												}
 											}
+										}
+									} else {
+										if *verbose == true {
+											log.Printf("%s\n", err)
 										}
 									}
 								}
+							}
+						} else {
+							if *verbose == true {
+								log.Printf("%s\n", err)
 							}
 						}
 
 						break
 					}
+				}
+			} else {
+				if *verbose == true {
+					log.Printf("%s\n", err)
 				}
 			}
 
